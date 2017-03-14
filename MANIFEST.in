@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include moneywave *.css
+recursive-include moneywave *.csv
+recursive-include moneywave *.html
+recursive-include moneywave *.ico
+recursive-include moneywave *.js
+recursive-include moneywave *.json
+recursive-include moneywave *.md
+recursive-include moneywave *.png
+recursive-include moneywave *.py
+recursive-include moneywave *.svg
+recursive-include moneywave *.txt
+recursive-exclude moneywave *.pyc
