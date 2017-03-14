@@ -8,13 +8,18 @@
 
 $("#saveBtn").on("click", function (event) {
 	console.log("Hello World!");
-	console.log("Start>>>>>>>>>>>>>>>>>>>>")
+	console.log("Start>>>>>>>>>>>>>>>>>>>>");
+	console.log(contained.urlparam);
+	console.log('This is contained url');
 	var objj = {}
 	var obj = $("#checkout_details").serializeArray();
 	//console.log(obj);
 	for(var i=0;i<obj.length;i++){
 		objj[obj[i].name]=obj[i].value
 	}
+	objj['amount']=contained.urlparam.amount
+	objj['redirecturl']=contained.urlparam.redirect_to
+	objj['email']=contained.urlparam.payer_email
 	console.log(objj)
 
 	frappe.call({
@@ -45,14 +50,18 @@ $("#saveBtn").on("click", function (event) {
 	})
 });
 
+var contained = Object();
+
 $(document).ready(function(){
 	frappe.call({
 		method:"moneywave.templates.pages.moneywave_checkout.get_url_params",
 		args: {'url':window.location.href},
 		callback: function(data){
 			console.log(data.message)
+			contained.urlparam = data.message
 			var obj = $("#checkout_details").serializeArray();
 			console.log(obj);
 			}
 			});
+	//console.log(contained.urlparam);
 		});

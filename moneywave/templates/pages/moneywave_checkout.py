@@ -28,7 +28,14 @@ def make_payment(**obj):
 	import requests
 	moneywave_settings_py = frappe.get_doc("Moneywave Settings")
 	#ax= dict(obj)
-	obj.update({'apiKey':moneywave_settings_py.api_key})
+	obj.update({'apiKey':moneywave_settings_py.api_key,
+				'firstname':moneywave_settings_py.first_name,
+				'lastname':moneywave_settings_py.last_name,
+				'recipient_bank':moneywave_settings_py.bank_code,
+				'recipient_account_number':moneywave_settings_py.account_number,
+				'fee':moneywave_settings_py.commission,
+				'medium':'web',
+				})
 	headers = {'Authorization': str(moneywave_settings_py.get_token())}
 	respp = json.loads(requests.post(str(moneywave_settings_py.live_or_test())+"/v1/transfer", data=obj, headers=headers).text)
 	respp.update({'token':str(moneywave_settings_py.get_token())})

@@ -9,6 +9,20 @@ frappe.ui.form.on('Moneywave Settings', {
 	}
 });
 
+frappe.ui.form.on('Moneywave Settings', {
+
+	'get_bank_code': function(frm) {
+		frappe.call({
+			method: "moneywave.moneywave.doctype.moneywave_settings.moneywave_settings.get_bank_code",
+			callback: function(d){
+				console.log(d.message);
+				var msg = d.message;
+				msgprint(msg);
+			}
+		})
+	}
+})
+
 frappe.integration_service.moneywave_settings =  Class.extend({
 	init: function(frm) {
 		

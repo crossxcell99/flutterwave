@@ -33,6 +33,7 @@ class MoneywaveSettings(IntegrationService):
 	def on_update(self):
 		pass
 
+
 	def enable(self):
 		call_hook_method('payment_gateway_enabled', gateway='Razorpay')
 
@@ -188,3 +189,11 @@ def post_request(url, auth=None,data={}):
 	except Exception, exc:
 		frappe.log_error(frappe.get_traceback())
 		raise exc
+
+@frappe.whitelist()
+def get_bank_code():
+	rr = json.loads(requests.post("https://moneywave.herokuapp.com/banks").text)
+	rrr = ''
+	for i in rr['data']:
+		rrr = rrr + '<p>' + str(rr['data'][i]) + '    :' + str(i) + '</p>'
+	return rrr
