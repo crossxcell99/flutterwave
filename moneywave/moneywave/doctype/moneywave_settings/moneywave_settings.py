@@ -35,8 +35,6 @@ class MoneywaveSettings(IntegrationService):
 
 
 	def enable(self):
-		call_hook_method('payment_gateway_enabled', gateway='Razorpay')
-
 		if not self.flags.ignore_mandatory:
 			self.validate_moneywave_credentails()
 
@@ -95,7 +93,8 @@ class MoneywaveSettings(IntegrationService):
 		redirect_message = data.get('notes', {}).get('redirect_message') or None
 
 		try:
-			resp = json.loads(requests.post(self.live_or_test() + "/v1/transfer", data = self.m_token).text)
+			resp = json.loads(requests.post(self.live_or_test() + "/v1/transfer/" + str(data['id']), headers={'Authorization': str(frappe.get_doc("Moneywave Settings").get_token())}).text)
+			frappe.errprint(resp)
 			if resp['status'] == "success":
 				self.integration_request.db_set('status', 'Authorized', update_modified=False)
 				self.flags.status_changed_to = "Authorized"
@@ -106,7 +105,8 @@ class MoneywaveSettings(IntegrationService):
 			# failed
 			pass
 
-		status = frappe.flags.integration_request.status_code
+		#status = frappe.flags.integration_request.status_code
+
 		if self.flags.status_changed_to == "Authorized":
 			if self.data.reference_doctype and self.data.reference_docname:
 				custom_redirect_to = None
@@ -132,7 +132,7 @@ class MoneywaveSettings(IntegrationService):
 
 		return {
 			"redirect_to": redirect_url,
-			"status": status
+			#"status": status
 		}
 	
 	def get_service_details(self):
@@ -171,24 +171,6 @@ class MoneywaveSettings(IntegrationService):
 			</div>
 		"""
 
-def post_request(url, auth=None,data={}):
-
-	headers = {}
-	if not auth:
-		return
-
-	headers['Content-Type'] = 'application/json'
-	if not data=={}:
-		data = json.dumps(data)
-
-	try:
-		s = get_request_session()
-		frappe.flags.integration_request = s.post(url, data=data, headers=headers)
-		frappe.flags.integration_request.raise_for_status()
-		return frappe.flags.integration_request.json()
-	except Exception, exc:
-		frappe.log_error(frappe.get_traceback())
-		raise exc
 
 @frappe.whitelist()
 def get_bank_code():
@@ -197,3 +179,22 @@ def get_bank_code():
 	for i in rr['data']:
 		rrr = rrr + '<p>' + str(rr['data'][i]) + '    :' + str(i) + '</p>'
 	return rrr
+
+#def post_request(url, auth=None,data={}):
+#
+#	headers = {}
+#	if not auth:
+#		return
+#
+#	headers['Content-Type'] = 'application/json'
+#	if not data=={}:
+#		data = json.dumps(data)
+#
+#	try:
+#		s = get_request_session()
+#		frappe.flags.integration_request = s.post(url, data=data, headers=headers)
+#		frappe.flags.integration_request.raise_for_status()
+#		return frappe.flags.integration_request.json()
+#	except Exception, exc:
+#		frappe.log_error(frappe.get_traceback())
+#		raise exc

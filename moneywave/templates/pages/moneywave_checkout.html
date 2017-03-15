@@ -1,3 +1,5 @@
+<script type="text/javascript" src="http://spin.js.org/spin.js" ></script>
+
 <p>
 
 	<div id="div_id">
@@ -8,7 +10,12 @@
 			Card Expiry Year: <br><input type="text" name="expiry_year"><br>
 			Card Expiry Month: <br><input type="text" name="expiry_month"><br>
 		</form>
-			<button id="saveBtn">Make Payment</button>
+			<button id="saveBtn" style="margin-top: 10px">Make Payment</button>
 	</div>
+	<div id="iframe_div" style="margin-top : 15px" class="hidden">
+		<iframe id="authIframe" scrolling="no" name="authIframe"></iframe>
+	</div>
+
+	<div id="loadingAnimation" style="align-content: center; margin: 15px;"></div>
 
 </p>
