@@ -68,9 +68,13 @@ class MoneywaveSettings(IntegrationService):
 		self.data = frappe._dict(data)
 
 		try:
-			self.integration_request = super(MoneywaveSettings, self).create_request(self.data, "Host", \
-				"Moneywave")
-			return self.authorize_payment()
+			if frappe.db.exists("Integration Request",self.data.flutter_charge_reference):
+				self.integration_request = frappe.get_doc("Integration Request",self.data.flutter_charge_reference)
+				return self.authorize_payment()
+			else:
+				self.integration_request = super(MoneywaveSettings, self).create_request(self.data, "Host", \
+					"Moneywave", self.data.flutter_charge_reference)
+				return self.authorize_payment()
 
 		except Exception:
 			frappe.log_error(frappe.get_traceback())
@@ -91,19 +95,24 @@ class MoneywaveSettings(IntegrationService):
 		data = json.loads(self.integration_request.data)
 		redirect_to = data.get('notes', {}).get('redirect_to') or None
 		redirect_message = data.get('notes', {}).get('redirect_message') or None
+		#frappe.errprint(self.integration_request.docname)
 
 		try:
 			resp = json.loads(requests.post(self.live_or_test() + "/v1/transfer/" + str(data['id']), headers={'Authorization': str(frappe.get_doc("Moneywave Settings").get_token())}).text)
 			frappe.errprint(resp)
 			if resp['status'] == "success":
-				self.integration_request.db_set('status', 'Authorized', update_modified=False)
-				self.flags.status_changed_to = "Authorized"
+				if resp['data']['status'] == "success":
+					self.integration_request.db_set('status', 'Authorized', update_modified=False)
+					self.flags.status_changed_to = "Authorized"
+				else:
+					self.integration_request.db_set('status', 'Queued', update_modified=False)
+					self.flags.status_changed_to = "Queued"
 			else:
 				frappe.log_error(str(resp), 'Moneywave Payment not authorized')
 		except:
 			frappe.log_error(frappe.get_traceback())
 			# failed
-			pass
+			#pass
 
 		#status = frappe.flags.integration_request.status_code
 

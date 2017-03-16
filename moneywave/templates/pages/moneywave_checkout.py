@@ -23,7 +23,19 @@ def get_url_params(url):
 	for i in query:
 		ret_query.update({i:query[i][0]})
 	#	ret_query.update({i:query[i]})
-	return ret_query
+	if 'transactionStatus' in ret_query:
+		request_handle = frappe.get_all('Integration Request', filters={'name': ret_query['ref']},
+			fields=['data','status'])
+		request_handle_data = json.loads(request_handle[0].data)
+
+		if ret_query['transactionStatus'] == 'success':
+			continue_payment(request_handle_data['flutter_charge_reference'], request_handle[0].data,
+				request_handle_data['reference_doctype'], request_handle_data['reference_docname'])
+		
+		return request_handle_data.update(ret_query)
+
+	else:
+		return ret_query
 
 @frappe.whitelist()
 def make_payment(**obj):
@@ -41,6 +53,7 @@ def make_payment(**obj):
 	headers = {'Authorization': str(moneywave_settings_py.get_token())}
 	respp = json.loads(requests.post(str(moneywave_settings_py.live_or_test())+"/v1/transfer", data=obj, headers=headers).text)
 	respp.update({'token':str(moneywave_settings_py.get_token())})
+	frappe.errprint(respp['data']['transfer'])
 	return respp
 
 @frappe.whitelist()
@@ -59,7 +72,6 @@ def continue_payment(payment_ref, options, reference_doctype, reference_docname)
 
 	data =  frappe.get_doc("Moneywave Settings").create_request(data)
 	frappe.db.commit()
-	return data
 
 
 def get_context(context):

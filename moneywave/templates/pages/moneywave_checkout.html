@@ -2,20 +2,24 @@
 
 <p>
 
-	<div id="div_id">
-		<form id="checkout_details">
-			Phone Number: <br><input type="text" name="phonenumber"><br>
-			Card Number: <br><input type="text" name="card_no"><br>
-			Card CVV Number: <br><input type="text" name="cvv"><br>
-			Card Expiry Year: <br><input type="text" name="expiry_year"><br>
-			Card Expiry Month: <br><input type="text" name="expiry_month"><br>
-		</form>
-			<button id="saveBtn" style="margin-top: 10px">Make Payment</button>
-	</div>
-	<div id="iframe_div" style="margin-top : 15px" class="hidden">
-		<iframe id="authIframe" scrolling="no" name="authIframe"></iframe>
-	</div>
+	<div id="universal_container">
 
-	<div id="loadingAnimation" style="align-content: center; margin: 15px;"></div>
+		<div id="div_id">
+			<form id="checkout_details">
+				Phone Number: <br><input type="text" name="phonenumber"><br>
+				Card Number: <br><input type="text" name="card_no"><br>
+				Card CVV Number: <br><input type="text" name="cvv"><br>
+				Card Expiry Year: <br><input type="text" name="expiry_year"><br>
+				Card Expiry Month: <br><input type="text" name="expiry_month"><br>
+			</form>
+				<button id="saveBtn" style="margin-top: 10px">Make Payment</button>
+		</div>
+
+		<div id="iframe_div" style="margin-top : 15px" class="hidden">
+			<iframe id="authIframe" scrolling="no" name="authIframe"></iframe>
+		</div>
+
+		<div id="loadingAnimation" style="align-content: center; margin: 15px;"></div>
+	</div>
 
 </p>
